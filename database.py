@@ -3,19 +3,19 @@ import sqlite3 as lite
 import argparse
 import pickle
 
-PARSER = argparse.ArgumentParser()
-PARSER.add_argument('--salaries', default='salaries.txt')
-PARSER.add_argument('--model', default='model.txt')
-PARSER.add_argument('--model2', default='model2.txt')
-ARGS = PARSER.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument('--salaries', default='salaries.txt')
+parser.add_argument('--model', default='model.txt')
+parser.add_argument('--model2', default='model2.txt')
+args = parser.parse_args()
 
-CON = lite.connect('test.db')
+con = lite.connect('test.db')
 
 
 def create_table():
     """создание таблицы с зарплатами по регионам"""
-    with CON:
-        cursor = CON.cursor()
+    with con:
+        cursor = con.cursor()
         cursor.execute("DROP TABLE IF EXISTS regions")
         cursor.execute("""CREATE TABLE regions(Id INTEGER PRIMARY KEY,
                                             name VARCHAR(30),
@@ -24,9 +24,9 @@ def create_table():
 
 def fill_in():
     """внесение данных в таблицу"""
-    with CON:
-        cursor = CON.cursor()
-        with open(ARGS.salaries) as file:
+    with con:
+        cursor = con.cursor()
+        with open(args.salaries) as file:
             for line in file:
                 line = line.split('  ')
                 cursor.execute("""INSERT INTO regions(name,salary)
@@ -36,8 +36,8 @@ def fill_in():
 
 def get_result():
     """Делим регионы на 3 группы по сумме зарплаты"""
-    with CON:
-        cursor = CON.cursor()
+    with con:
+        cursor = con.cursor()
         cursor.execute("""SELECT COUNT(salary)
                         FROM regions
                         WHERE salary > 30000""")
@@ -61,8 +61,8 @@ def get_result():
 
 def top_10():
     """10 регионов с самой высокой зарплатой"""
-    with CON:
-        cursor = CON.cursor()
+    with con:
+        cursor = con.cursor()
         data = []
         cursor.execute("""SELECT name, salary
                            FROM regions
@@ -77,8 +77,8 @@ def top_10():
 create_table()
 fill_in()
 
-with open(ARGS.model, "wb") as new_file:
+with open(args.model, "wb") as new_file:
     pickle.dump(get_result(), new_file)
 
-with open(ARGS.model2, "wb") as new_file:
+with open(args.model2, "wb") as new_file:
     pickle.dump(top_10(), new_file)
