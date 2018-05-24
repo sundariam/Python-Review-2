@@ -39,16 +39,16 @@ def get_result():
         cursor = CON.cursor()
         cursor.execute("""SELECT COUNT(salary)
                         FROM regions
-                        WHERE salary > 25000""")
+                        WHERE salary > 30000""")
         count_max = cursor.fetchone()
         cursor.execute("""SELECT COUNT(salary)
                         FROM regions
-                        WHERE salary > 20000
-                        AND salary < 25000""")
+                        WHERE salary > 25000
+                        AND salary < 30000""")
         count_avg = cursor.fetchone()
         cursor.execute("""SELECT COUNT(salary)
                         FROM regions
-                        WHERE salary < 20000""")
+                        WHERE salary < 25000""")
         count_min = cursor.fetchone()
         result = []
         result.append(count_max)
