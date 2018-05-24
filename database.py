@@ -6,6 +6,7 @@ import pickle
 PARSER = argparse.ArgumentParser()
 PARSER.add_argument('--salaries', default='salaries.txt')
 PARSER.add_argument('--model', default='model.txt')
+PARSER.add_argument('--model2', default='model2.txt')
 ARGS = PARSER.parse_args()
 
 CON = lite.connect('test.db')
@@ -58,8 +59,26 @@ def get_result():
     return result
 
 
+def top_10():
+    """10 регионов с самой высокой зарплатой"""
+    with CON:
+        cursor = CON.cursor()
+        data = []
+        cursor.execute("""SELECT name, salary
+                           FROM regions
+                           WHERE salary > 50000""")
+        i = 0
+        while i < 10:
+            data.append(cursor.fetchone())
+            i += 1
+    return data
+
+
 create_table()
 fill_in()
 
 with open(ARGS.model, "wb") as new_file:
     pickle.dump(get_result(), new_file)
+
+with open(ARGS.model2, "wb") as new_file:
+    pickle.dump(top_10(), new_file)
